@@ -1,9 +1,9 @@
 (() => {
   const factions = [
-    ['Centicore Vanguard', 'Faculty of Agriculture and Food Science (FAFS)'],
-    ['Primordial Tiamat', 'Faculty of Engineering (FE)', 'Faculty of Veterinary Medicine (FVM)', 'Faculty of Nursing (FON)', 'Faculty of Computing (FC)', 'College of Medicine (CM)'],
-    ['Mystic Moirai', 'Faculty of Humanities and Social Sciences (FHSS)', 'Faculty of Teacher Education (FTE)', 'Faculty of Natural Sciences (FNMS)'],
-    ['Sylvan Dragons', 'Faculty of Management and Economics (FME)', 'Faculty of Forestry and Environmental Science (FFES)']
+    ['Centicore Vanguard', 'FAFS'],
+    ['Primordial Tiamat', 'FE', 'FON', 'FOC', 'FVM', 'CM'],
+    ['Mystic Moirai', 'FHSS', 'FTE', 'FNMS'],
+    ['Sylvan Dragons', 'FEM', 'FFES']
   ];
   const state = { client: null, results: new Map(), user: null, isAdmin: false };
 
