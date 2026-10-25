@@ -137,20 +137,20 @@ const st={q:'',div:'all',day:'all'},open=new Set();
 function chips(el,items,key){el.insertAdjacentHTML('beforeend',items.map(([v,l])=>`<button class="chip" data-k="${key}" data-v="${v}" aria-pressed="${st[key]==v}">${l}</button>`).join(''))}
 chips($('#fd'),[['all','All'],['Faculty','Faculty'],['College','College'],['HS','High School']],'div');
 chips($('#fy'),[['all','All days'],...days.map(d=>[d,d])],'day');
-const tmh=t=>{if(t.ph)return `<span class="tm ph">${t.ph[0]=='W'?'Winner':'Loser'} of G${t.ph.slice(1)}</span>`;
+const tmh=t=>{if(t.ph){const resolved=window.__skResolve?.(window.__skCurrent,t.ph);if(resolved)t={name:resolved};else return `<span class="tm ph">${t.ph[0]=='W'?'Winner':'Loser'} of G${t.ph.slice(1)}</span>`};
  if(!t.name)return `<span class="tm ph">Seed ${t.seed.slice(1)} · TBA</span>`;
  const e=EMB[t.name],c=e?FULL[t.name][1]:FACN.includes(t.name)?'var(--fac)':HSN.includes(t.name)?'var(--hs)':'#aaa';
  return `<span class="tm" style="--c:${c}">${e?`<img src="${e}" alt="">`:'<i></i>'}${t.name}${t.seed?`<small>${t.seed}</small>`:''}</span>`};
-const gh=g=>`<div class="g${g.id=='PRM'?' prm':''}"><span class="gid">${g.id}</span><div class="mu">${tmh(g.t1)}<span class="vs">vs</span>${tmh(g.t2)}</div></div>`;
+const gh=g=>{window.__skCurrent=g.__sk||'';return `<div class="g${g.id=='PRM'?' prm':''}"><span class="gid">${g.id}</span><div class="mu">${tmh(g.t1)}<span class="vs">vs</span>${tmh(g.t2)}</div></div>`};
 const DC={Faculty:'var(--fac)',College:'var(--col)',HS:'var(--hs)'};
 function sideHTML(sd){
  const dv=sd.days.map(d=>{let prev='';return `<div class="dl">${d.date=='TBA'?'Date &amp; time to be announced':d.date}</div>`+d.slots.map(s=>{
   const brk=/am/.test(prev)&&/pm/.test(s.time||'')?'<div class="nb">Noon break</div>':'';prev=s.time||'';
-  return `${brk}<div class="slot"><div class="time">${s.time||'TBA'}</div><div class="gs">${s.games.map(gh).join('')}</div></div>`}).join('')}).join('');
+  return `${brk}<div class="slot"><div class="time">${s.time||'TBA'}</div><div class="gs">${s.games.map(g=>{g.__sk=[sd.__skDivision,sd.__skSport,sd.title,d.date,g.id].join('::');return gh(g)}).join('')}</div></div>`}).join('')}).join('');
  const lots=sd.lots.length?`<div class="lots"><b>Draw lots</b>${sd.lots.map(([n,t])=>`<span><em>${n}</em>${t}</span>`).join('')}</div>`:'';
  return `<div class="side"><h4>${sd.title}</h4>${sd.venue?`<div class="ven">${sd.venue}</div>`:''}${lots}${dv}</div>`}
 const ok=d=>st.day=='all'||st.day==d.date;
-function view(s){const sides=s.sides.map(sd=>({...sd,days:sd.days.filter(ok)})).filter(sd=>sd.days.length);
+function view(s,division){const sides=s.sides.map(sd=>({...sd,__skDivision:division,__skSport:s.name,days:sd.days.filter(ok)})).filter(sd=>sd.days.length);
  return{name:s.name,sides,n:sides.reduce((a,sd)=>a+sd.days.reduce((b,d)=>b+d.slots.reduce((c,sl)=>c+sl.games.length,0),0),0)}}
 const DIVS=[['Faculty','Faculty','var(--fac)'],['College','College','var(--col)'],['HS','High School','var(--hs)']];
 let keys=[];
@@ -160,7 +160,7 @@ function render(){keys=[];cal();
  $('#teams').hidden=!(st.div=='all'||st.div=='College');
  document.querySelectorAll('.lg').forEach(e=>e.hidden=!(st.div=='all'||e.dataset.d==st.div));
  $('#list').innerHTML=DIVS.filter(([k])=>st.div=='all'||k==st.div).map(([k,label,c])=>{
-  const L=D[k].map(view).filter(v=>v.n&&v.name.toLowerCase().includes(st.q));
+  const L=D[k].map(s=>view(s,k)).filter(v=>v.n&&v.name.toLowerCase().includes(st.q));
   if(!L.length)return'';const tot=L.reduce((a,v)=>a+v.n,0);
   return `<section class="dv" style="--dc:${c}"><div class="dvh"><h3>${label}</h3><span>${L.length} sports · ${tot} games</span></div><div class="cards">${L.map((v,j)=>{const key=k+j;keys.push(key);const o=open.has(key);
    return `<article class="sp${o?' open':''}" data-k="${key}"><button class="hd" aria-expanded="${o}"><span class="no">${String(j+1).padStart(2,'0')}</span><span class="nm">${v.name}<small>${v.sides.map(x=>x.title).join('  ·  ')}</small></span><span class="cnt">${v.n} games</span><span class="chev"></span></button><div class="panel"><div><div class="cols">${v.sides.map(sideHTML).join('')}</div></div></div></article>`}).join('')}</div></section>`}).join('')||'<div class="empty">No games match these filters.</div>'}
@@ -170,5 +170,6 @@ $('#q').addEventListener('input',e=>{st.q=e.target.value.trim().toLowerCase();re
 $('#ex').onclick=()=>{keys.forEach(k=>open.add(k));render()};$('#co').onclick=()=>{open.clear();render()};
 render();
 </script>
+<script src="/app.js" defer></script>
 </body>
 </html>

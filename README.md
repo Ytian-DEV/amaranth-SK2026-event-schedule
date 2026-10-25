@@ -13,7 +13,14 @@ Run `npm start`, then open the local address shown in the terminal. The command 
 3. Keep the framework preset as **Other**; no build command or output directory is required.
 4. Click **Deploy**.
 
-There are no required environment variables and no Supabase setup. The supplied design is a published schedule with client-side search, filters, and expandable game details; it does not include an admin workflow or require live schedule editing.
+## Live results and administrator setup
+
+The schedule works without a database. To enable the **Admin results** workflow, create a Supabase project, run `supabase/schema.sql` in its SQL editor, then add these Vercel environment variables and redeploy:
+
+- `SUPABASE_URL`
+- `SUPABASE_ANON_KEY`
+
+Create the administrator in Supabase Auth, then run the final commented `insert` statement in `supabase/schema.sql` with that person's email. An administrator can sign in at `/#admin`, confirm the winner of a match, and the site will resolve every related “Winner/Loser of Game” fixture automatically.
 
 ## Updating the schedule
 
