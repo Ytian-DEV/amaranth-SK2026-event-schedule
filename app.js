@@ -3,7 +3,7 @@
     ['Centicore Vanguard', 'FAFS'],
     ['Primordial Tiamat', 'FE', 'FON', 'FOC', 'FVM', 'CM'],
     ['Mystic Moirai', 'FHSS', 'FTE', 'FNMS'],
-    ['Sylvan Dragons', 'FEM', 'FFES']
+    ['Sylvan Dragons', 'FME', 'FFES']
   ];
   const state = { client: null, results: new Map(), user: null, isAdmin: false };
 
